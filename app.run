@@ -1,0 +1,54 @@
+from flask import Flask, jsonify, request
+from datetime import datetime
+import os
+
+app = Flask(__name__)
+
+API_KEY = os.environ.get("API_KEY", "M0HaM_Tt_updy_2026")
+
+def check_key():
+    key = request.headers.get("X-API-Key")
+    return key == API_KEY
+
+@app.route('/')
+def home():
+    return jsonify({
+        "status": "online",
+        "app": "Forex AI API",
+        "version": "1.0",
+        "time": datetime.now().isoformat()
+    })
+
+@app.route('/api/status')
+def status():
+    if not check_key():
+        return jsonify({"error": "Invalid API Key"}), 401
+    return jsonify({
+        "ai_status": "active",
+        "scanning": True,
+        "server_online": True
+    })
+
+@app.route('/api/balance')
+def balance():
+    if not check_key():
+        return jsonify({"error": "Invalid API Key"}), 401
+    return jsonify({
+        "balance": 1000.00,
+        "currency": "USD",
+        "profit": 0.00
+    })
+
+@app.route('/api/trades')
+def trades():
+    if not check_key():
+        return jsonify({"error": "Invalid API Key"}), 401
+    return jsonify({
+        "active_trades": 0,
+        "total_trades": 0,
+        "win_rate": 0
+    })
+
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
